@@ -2,7 +2,7 @@
  * Move for Gamed, GameClient.
  *
  * @author Bart Massey
- * @version $Revision:$
+ * @version $Revision: 1.4 $
  */
 public class Move {
     /**
