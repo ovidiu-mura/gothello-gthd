@@ -153,21 +153,43 @@ public class Board {
 	return false;
     }
 
+    final static private boolean debug_move_ok = false;
+
     boolean move_ok(Move m) {
 	int dx = sgn(m.x2 - m.x1);
 	int dy = sgn(m.y2 - m.y1);
+	if (debug_move_ok)
+	    System.out.println("entering move_ok(): dir " +
+			       dx + ", " + dy);
 	if (clipped(m.x1) || clipped(m.y1) ||
-	    clipped(m.x2) || clipped(m.y2))
+	    clipped(m.x2) || clipped(m.y2)) {
+	    if (debug_move_ok)
+		System.out.println("leaving move_ok(): clipped");
 	    return false;
+	}
 	int d = dist(m.x1, m.y1, dx, dy);
-	if ((m.x2 - m.x1) * dx != d * dx)
+	if ((m.x2 - m.x1) != d * dx) {
+	    if (debug_move_ok)
+		System.out.println("leaving move_ok(): bad x disp");
 	    return false;
-	if ((m.y2 - m.y1) * dy != d * dy)
+	}
+	if ((m.y2 - m.y1) != d * dy) {
+	    if (debug_move_ok)
+		System.out.println("leaving move_ok(): bad y disp");
 	    return false;
-	if (blocked(m, dx, dy, d))
+	}
+	if (blocked(m, dx, dy, d)) {
+	    if (debug_move_ok)
+		System.out.println("leaving move_ok(): blocked");
 	    return false;
-	if (square[m.x2][m.y2] == square[m.x1][m.y1])
+	}
+	if (square[m.x2][m.y2] == square[m.x1][m.y1]) {
+	    if (debug_move_ok)
+		System.out.println("leaving move_ok(): self-capture");
 	    return false;
+	}
+	if (debug_move_ok)
+	    System.out.println("leaving move_ok(): success");
 	return true;
     }
 
