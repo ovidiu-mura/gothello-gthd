@@ -73,7 +73,7 @@ public class Board {
 	s.flush();
     }
 
-    private static int opponent(int player) {
+    static final int opponent(int player) {
 	if (player == Connection.PLAYER_WHITE)
 	    return Connection.PLAYER_BLACK;
 	if (player == Connection.PLAYER_BLACK)
@@ -82,7 +82,7 @@ public class Board {
     }
 
     // XXX see declaration of BLACK_CHECKER, WHITE_CHECKER
-    private static int checker_of(int player) {
+    static final int checker_of(int player) {
 	return player;
     }
 
@@ -96,7 +96,7 @@ public class Board {
 	return true;
     }
 
-    private boolean repeated_position() {
+    boolean repeated_position() {
 	Board p = predecessor;
 	while(p != null) {
 	    if (p.same_position(this))
@@ -106,7 +106,7 @@ public class Board {
 	return false;
     }
 
-    private static final int sgn(int x) {
+    static final int sgn(int x) {
 	if (x > 0)
 	    return 1;
 	if (x < 0)
@@ -114,7 +114,7 @@ public class Board {
 	return 0;
     }
 
-    private static final boolean clipped(int x) {
+    static final boolean clipped(int x) {
 	if (x >= 8)
 	    return true;
 	if (x < 0)
@@ -122,7 +122,7 @@ public class Board {
 	return false;
     }
 
-    private int dist(int x, int y, int dx, int dy) {
+    int dist(int x, int y, int dx, int dy) {
 	int d = 0;
 	for(int q = -7; q <= 7; q++) {
 	    int xx = x + q * dx;
@@ -135,7 +135,7 @@ public class Board {
 	return d;
     }
 
-    private boolean blocked(Move m, int dx, int dy, int d) {
+    boolean blocked(Move m, int dx, int dy, int d) {
 	for (int q = 1; q < d; q++) {
 	    int xx = m.x1 + q * dx;
 	    int yy = m.y1 + q * dy;
@@ -145,7 +145,7 @@ public class Board {
 	return false;
     }
 
-    private boolean move_ok(Move m) {
+    boolean move_ok(Move m) {
 	int dx = sgn(m.x2 - m.x1);
 	int dy = sgn(m.y2 - m.y1);
 	if (clipped(m.x1) || clipped(m.y1) ||
@@ -180,7 +180,7 @@ public class Board {
 	return false;
     }
 
-    private int map_component(int side, int x, int y, boolean map[][]) {
+    int map_component(int side, int x, int y, boolean map[][]) {
 	int total = 1;
 	map[x][y] = true;
 	for (int dx = -1; dx <= 1; dx++)
@@ -200,7 +200,7 @@ public class Board {
         return total;
     }
 
-    private boolean connected(int side) {
+    boolean connected(int side) {
 	for (int i = 0; i < 8; i++)
 	    for (int j = 0; j < 8; j++)
 		if (square[i][j] == checker_of(side)) {
