@@ -34,8 +34,8 @@ public class Move {
 	    throw new IllegalArgumentException("bad move format");
 	x1 = move_letter(desc.charAt(0));
 	y1 = move_digit(desc.charAt(1));
-	x2 = move_letter(desc.charAt(2));
-	y2 = move_digit(desc.charAt(3));
+	x2 = move_letter(desc.charAt(3));
+	y2 = move_digit(desc.charAt(4));
     }
 
     Move(int x1, int y1, int x2, int y2) {
