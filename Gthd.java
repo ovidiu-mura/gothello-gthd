@@ -147,12 +147,19 @@ public class Gthd {
 	    case Board.GAME_OVER:
 		board.print(System.out);
 		winner = board.referee();
-		if (winner == Board.OBSERVER)
-		    System.out.println("Game drawn");
-		else
-		    System.out.println("Player " +
-				       winner +
-				       " wins.");
+		if (winner == Board.OBSERVER) {
+		    System.out.println("Game drawn.");
+		} else {
+		    switch(winner) {
+		    case Board.PLAYER_BLACK:
+			System.out.print("Black");
+			break;
+		    case Board.PLAYER_WHITE:
+			System.out.print("White");
+			break;
+		    }
+		    System.out.println(" wins.");
+		}
 		move_conn.final_move(to_move, winner, m);
 		white_conn.stop(serial, to_move, winner, m);
 		black_conn.stop(serial, to_move, winner, m);

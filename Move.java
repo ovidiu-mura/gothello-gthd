@@ -2,7 +2,7 @@
  * Move for Gthd, GthClient.
  *
  * @author Bart Massey
- * @version $Revision: 2.0 $
+ * @version $Revision: 2.1 $
  */
 public class Move {
     /**
@@ -48,6 +48,14 @@ public class Move {
     public Move(int x, int y) {
 	this.x = x;
 	this.y = y;
+    }
+
+    /**
+     * Create a move object which is a pass.
+     */
+    public Move() {
+	this.x = -1;
+	this.y = -1;
     }
 
     private static int move_letter(char ch) {
