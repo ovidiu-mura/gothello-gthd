@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Vector;
 
 public class Board {
     public static final int GAME_OVER = 1;
@@ -163,7 +164,8 @@ public class Board {
 	return true;
     }
 
-    private boolean has_moves() {
+    Vector genMoves() {
+	Vector result = new Vector();
 	for (int i = 0; i < 8; i++)
 	    for (int j = 0; j < 8; j++)
 		if (square[i][j] == checker_of(to_move)) {
@@ -174,10 +176,15 @@ public class Board {
 			    int d = dist(i, j, dx, dy);
 			    Move m = new Move(i, j, i + d * dx, j + d * dy);
 			    if (move_ok(m))
-				return true;
+				result.add(m);
 			}
 		}
-	return false;
+	return result;
+    }
+
+    private boolean has_moves() {
+	Vector m = genMoves();
+	return m.size() > 0;
     }
 
     int map_component(int side, int x, int y, boolean map[][]) {
