@@ -1,6 +1,22 @@
 public class Move {
     public int x1, y1, x2, y2;
 
+    Move(String desc) {
+	if (desc.length() != 5 || desc.charAt(2) != '-')
+	    throw new IllegalArgumentException("bad move format");
+	x1 = move_letter(desc.charAt(0));
+	y1 = move_digit(desc.charAt(1));
+	x2 = move_letter(desc.charAt(3));
+	y2 = move_digit(desc.charAt(4));
+    }
+
+    Move(int x1, int y1, int x2, int y2) {
+	this.x1 = x1;
+	this.y1 = y1;
+	this.x2 = x2;
+	this.y2 = y2;
+    }
+
     private static int move_letter(char ch) {
 	switch (ch) {
 	case 'a': return 0;
@@ -27,22 +43,6 @@ public class Move {
 	case '8': return 7;
 	}
 	throw new IllegalArgumentException("bad move digit");
-    }
-
-    Move(String desc) {
-	if (desc.length() != 5 || desc.charAt(2) != '-')
-	    throw new IllegalArgumentException("bad move format");
-	x1 = move_letter(desc.charAt(0));
-	y1 = move_digit(desc.charAt(1));
-	x2 = move_letter(desc.charAt(3));
-	y2 = move_digit(desc.charAt(4));
-    }
-
-    Move(int x1, int y1, int x2, int y2) {
-	this.x1 = x1;
-	this.y1 = y1;
-	this.x2 = x2;
-	this.y2 = y2;
     }
 
     private static String square_name(int x, int y) {
