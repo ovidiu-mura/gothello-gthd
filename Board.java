@@ -180,37 +180,39 @@ public class Board {
 	return false;
     }
 
-    private int map_component(int x, int y, boolean map[][]) {
+    private int map_component(int side, int x, int y, boolean map[][]) {
 	int total = 1;
 	map[x][y] = true;
 	for (int dx = -1; dx <= 1; dx++)
-	    for (int dy = -1; dy <=1; dy++) {
+	    for (int dy = -1; dy <= 1; dy++) {
 		if (dx == 0 && dy == 0)
 		    continue;
-		if (clipped(x + dx) || clipped(y + dy))
+		int nx = x + dx;
+		int ny = y + dy;
+		if (clipped(nx) || clipped(ny))
 		    continue;
-		if (map[x + dx][y + dy])
+		if (square[nx][ny] != checker_of(side))
 		    continue;
-		total += map_component(x + dx, y + dy, map);
+		if (map[nx][ny])
+		    continue;
+		total += map_component(side, nx, ny, map);
 	    }
         return total;
     }
 
     private boolean connected(int side) {
-	int i = 0;
-	int j = 0;
-	for (i = 0; i < 8; i++)
-	    for (j = 0; j < 8; j++)
-		if (square[i][j] == checker_of(side))
-		    break;
-	if (i >= 8 && j >= 8)
-	    return true;
-	boolean map[][] = new boolean[8][8];
-	int ncomponents = map_component(i, j, map);
-	for (i = 0; i < 8; i++)
-	    for (j = 0; j < 8; j++)
-		if (square[i][j] == checker_of(side) && !map[i][j])
-		    return false;
+	for (int i = 0; i < 8; i++)
+	    for (int j = 0; j < 8; j++)
+		if (square[i][j] == checker_of(side)) {
+		    boolean map[][] = new boolean[8][8];
+		    int ncomponents = map_component(side, i, j, map);
+		    for (int ii = 0; ii < 8; ii++)
+			for (int jj = 0; jj < 8; jj++)
+			    if (square[ii][jj] == checker_of(side) &&
+				!map[ii][jj])
+				return false;
+		    return true;
+		}
 	return true;
     }
 
