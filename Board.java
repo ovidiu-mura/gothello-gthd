@@ -11,9 +11,9 @@ public class Board {
 
     // rules-specific game state 
     Board predecessor = null;
-    private int square[][] = new int[8][8];
-    private static final int WHITE_CHECKER = Connection.PLAYER_WHITE;
-    private static final int BLACK_CHECKER = Connection.PLAYER_BLACK;
+    int square[][] = new int[8][8];
+    static final int WHITE_CHECKER = Connection.PLAYER_WHITE;
+    static final int BLACK_CHECKER = Connection.PLAYER_BLACK;
 
     public Board() {
 	for (int i = 0; i < 8; i++)
