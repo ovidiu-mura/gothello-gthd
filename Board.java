@@ -5,16 +5,19 @@ public class Board {
     public static final int GAME_OVER = 1;
     public static final int CONTINUE = 0;
     public static final int ILLEGAL_MOVE = -1;
+    static final int PLAYER_WHITE = 1;
+    static final int PLAYER_BLACK = 2;
+    static final int OBSERVER = 3;
     public int game_state = CONTINUE;
 
-    public int to_move = Connection.PLAYER_BLACK;
+    public int to_move = PLAYER_BLACK;
     public int serial = 1;
 
     // rules-specific game state 
     Board predecessor = null;
     int square[][] = new int[8][8];
-    static final int WHITE_CHECKER = Connection.PLAYER_WHITE;
-    static final int BLACK_CHECKER = Connection.PLAYER_BLACK;
+    static final int WHITE_CHECKER = PLAYER_WHITE;
+    static final int BLACK_CHECKER = PLAYER_BLACK;
 
     public Board() {
 	for (int i = 0; i < 8; i++)
@@ -54,10 +57,10 @@ public class Board {
 	}
 	if (game_state == GAME_OVER)
 	    s.print("*");
-	else if (to_move == Connection.PLAYER_WHITE)
-	    s.print("n");
+	else if (to_move == PLAYER_WHITE)
+	    s.print("w");
 	else
-	    s.print("s");
+	    s.print("b");
 	s.print("\r\n");
 	s.flush();
 	s.print("382\r\n");
@@ -75,16 +78,19 @@ public class Board {
     }
 
     static final int opponent(int player) {
-	if (player == Connection.PLAYER_WHITE)
-	    return Connection.PLAYER_BLACK;
-	if (player == Connection.PLAYER_BLACK)
-	    return Connection.PLAYER_WHITE;
+	if (player == PLAYER_WHITE)
+	    return PLAYER_BLACK;
+	if (player == PLAYER_BLACK)
+	    return PLAYER_WHITE;
 	throw new Error("internal error: bad player");
     }
 
     // XXX see declaration of BLACK_CHECKER, WHITE_CHECKER
     static final int checker_of(int player) {
 	return player;
+    }
+    static final int owner_of(int checker) {
+	return checker;
     }
 
     boolean same_position(Board b) {
@@ -140,7 +146,8 @@ public class Board {
 	for (int q = 1; q < d; q++) {
 	    int xx = m.x1 + q * dx;
 	    int yy = m.y1 + q * dy;
-	    if (square[xx][yy] == checker_of(opponent(to_move)))
+	    if (square[xx][yy] ==
+		checker_of(opponent(owner_of(square[m.x1][m.y1]))))
 		return true;
 	}
 	return false;
@@ -159,7 +166,7 @@ public class Board {
 	    return false;
 	if (blocked(m, dx, dy, d))
 	    return false;
-	if (square[m.x2][m.y2] == checker_of(to_move))
+	if (square[m.x2][m.y2] == square[m.x1][m.y1])
 	    return false;
 	return true;
     }
@@ -223,6 +230,13 @@ public class Board {
 	return true;
     }
 
+    public void makeMove(Move m) {
+	// In this game, the moves are easy
+	predecessor = new Board(this);
+	square[m.x2][m.y2] = square[m.x1][m.y1];
+	square[m.x1][m.y1] = 0;
+    }
+
     private static final boolean debug_try_move = false;
 
     public int try_move(Move m) {
@@ -247,11 +261,8 @@ public class Board {
 	}
 	if (debug_try_move)
 	    System.err.println("move ok");
-	predecessor = new Board(this);
 
-	// In this game, the moves are easy
-	square[m.x2][m.y2] = square[m.x1][m.y1];
-	square[m.x1][m.y1] = 0;
+	makeMove(m);
 
 	if (connected(to_move)) {
 	    game_state = GAME_OVER;
@@ -268,14 +279,14 @@ public class Board {
 	}
 	if (repeated_position()) {
 	    game_state = GAME_OVER;
-	    to_move = Connection.OBSERVER;
+	    to_move = OBSERVER;
 	    if (debug_try_move)
 		System.err.println("leaving try_move(): repeat draw");
 	    return GAME_OVER;
 	}
 
 	to_move = opponent(to_move);
-	if (to_move == Connection.PLAYER_BLACK)
+	if (to_move == PLAYER_BLACK)
 	    serial++;
 	if (debug_try_move)
 	    System.err.println("leaving try_move(): continue game");
