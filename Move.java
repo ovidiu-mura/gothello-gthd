@@ -1,7 +1,31 @@
+/**
+ * Move for Gamed, GameClient.
+ *
+ * @author Bart Massey
+ * @version $Revision:$
+ */
 public class Move {
-    public int x1, y1, x2, y2;
+    /**
+     * Source square coordinates in the range 0-7, 0-7,
+     * where the first coordinate is the column (x) value,
+     * and the second is the row (y) value.
+     */
+    public int x1, y1;
+    /**
+     * Destination square coordinates in the range 0-7, 0-7,
+     * where the first coordinate is the column (x) value,
+     * and the second is the row (y) value.
+     */
+    public int x2, y2;
 
-    Move(String desc) {
+    /**
+     * Create a move object from a description of the
+     * form "coord-coord" where "coord" is an algebraic
+     * square number.
+     *
+     * @param desc Move description.
+     */
+    public Move(String desc) {
 	if (desc.length() != 5 || desc.charAt(2) != '-')
 	    throw new IllegalArgumentException("bad move format");
 	x1 = move_letter(desc.charAt(0));
@@ -10,7 +34,16 @@ public class Move {
 	y2 = move_digit(desc.charAt(4));
     }
 
-    Move(int x1, int y1, int x2, int y2) {
+    /**
+     * Create a move object from the given starting and
+     * ending coordinates in the range 0-7.
+     *
+     * @param x1 Starting column.
+     * @param y1 Starting row.
+     * @param x1 Ending column.
+     * @param y1 Ending row.
+     */
+    public Move(int x1, int y1, int x2, int y2) {
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2;
@@ -61,6 +94,13 @@ public class Move {
 	throw new IllegalArgumentException("bad x coordinate in square");
     }
 
+    /**
+     * Get a description of the move object.
+     *
+     * @return String of the form "coord-coord" where
+     *         the coords are the starting and ending
+     *         move coordinates.
+     */
     public String name() {
 	return square_name(x1, y1) + "-" + square_name(x2, y2);
     }
