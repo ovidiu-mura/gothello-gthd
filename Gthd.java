@@ -123,9 +123,13 @@ public class Gamed {
 		    }
 		}
 		if (flag_fell) {
-		    System.out.println("Player " +
-				       winner +
-				       " wins on time.");
+		    if (winner == Connection.PLAYER_WHITE)
+			System.out.print("White");
+		    else if (winner == Connection.PLAYER_BLACK)
+			System.out.print("Black");
+		    else
+			throw new Error("bogus winner");
+		    System.out.println(" player wins on time.");
 		    move_conn.flag_fell();
 		    board.game_state = Board.GAME_OVER;
 		    white_conn.stop_flag(serial, winner);

@@ -50,9 +50,9 @@ public class Board {
 	s.print(serial);
 	s.print(" ");
 	if (Gamed.time_controls) {
-	    s.print(Gamed.secs(Gamed.white_msecs));
-	    s.print(" ");
 	    s.print(Gamed.secs(Gamed.black_msecs));
+	    s.print(" ");
+	    s.print(Gamed.secs(Gamed.white_msecs));
 	    s.print(" ");
 	}
 	if (game_state == GAME_OVER)
