@@ -157,6 +157,7 @@ public class Messages {
 	    Move m = new Move(move);
 	    return m;
 	} catch (IllegalArgumentException e) {
+	    System.out.println("Illegal move " + move + ": " + e.getMessage());
 	    response("199 Request not understood");
 	}
 	return null;
