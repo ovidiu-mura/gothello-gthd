@@ -60,8 +60,8 @@ public class Board {
 	s.print("\r\n");
 	s.flush();
 	s.print("382\r\n");
-	for (int j = 7; j >= 0; --j)
-	    for (int i = 0; i < 8; i++) {
+	for (int j = 7; j >= 0; --j) {
+	    for (int i = 0; i < 8; i++)
 		switch (square[i][j]) {
 		case 0:  s.print("."); break;
 		case BLACK_CHECKER:  s.print("b"); break;
