@@ -41,11 +41,11 @@ public class Connection {
 		socket.close();
 		throw new IOException("second try for white player");
 	    }
-	    if (LOAd.time_controls) {
+	    if (Gamed.time_controls) {
 		msg.response("101 " +
-			 LOAd.secs(LOAd.white_msecs) +
+			 Gamed.secs(Gamed.white_msecs) +
 			 " " +
-			 LOAd.secs(LOAd.black_msecs) +
+			 Gamed.secs(Gamed.black_msecs) +
 			 " Request accepted with time controls (you / opp)");
 		return;
 	    }
@@ -58,11 +58,11 @@ public class Connection {
 		socket.close();
 		throw new IOException("second try for black player");
 	    }
-	    if (LOAd.time_controls) {
+	    if (Gamed.time_controls) {
 		msg.response("101 " +
-			 LOAd.secs(LOAd.black_msecs) +
+			 Gamed.secs(Gamed.black_msecs) +
 			 " " +
-			 LOAd.secs(LOAd.white_msecs) +
+			 Gamed.secs(Gamed.white_msecs) +
 			 " Request accepted with time controls (you / opp)");
 		return;
 	    }
@@ -71,16 +71,16 @@ public class Connection {
 	}
 	if (who == OBSERVER) {
 	    // XXX this limit is illegal
-	    if (nobservers >= LOAd.max_observers) {
+	    if (nobservers >= Gamed.max_observers) {
 		msg.response("193 Cannot observe");
 		socket.close();
 		throw new IOException("too many observers");
 	    }
-	    if (LOAd.time_controls) {
+	    if (Gamed.time_controls) {
 		msg.response("101 " +
-			 LOAd.secs(LOAd.white_msecs) +
+			 Gamed.secs(Gamed.white_msecs) +
 			 " " +
-			 LOAd.secs(LOAd.black_msecs) +
+			 Gamed.secs(Gamed.black_msecs) +
 			 " Request accepted with time controls");
 		return;
 	    }

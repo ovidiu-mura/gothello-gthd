@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class LOABoard {
+public class Board {
     public static final int GAME_OVER = 1;
     public static final int CONTINUE = 0;
     public static final int ILLEGAL_MOVE = -1;
@@ -10,12 +10,12 @@ public class LOABoard {
     public int serial = 1;
 
     // rules-specific game state 
-    LOABoard predecessor = null;
+    Board predecessor = null;
     private int square[][] = new int[8][8];
     private static final int WHITE_CHECKER = Connection.PLAYER_WHITE;
     private static final int BLACK_CHECKER = Connection.PLAYER_BLACK;
 
-    public LOABoard() {
+    public Board() {
 	for (int i = 0; i < 8; i++)
 	    for (int j = 0; j < 8; j++)
 		square[i][j] = 0;
@@ -27,7 +27,7 @@ public class LOABoard {
 	}
     }
 
-    public LOABoard(LOABoard b) {
+    public Board(Board b) {
 	predecessor = b.predecessor;
 	for (int i = 0; i < 8; i++)
 	    for (int j = 0; j < 8; j++)
@@ -39,16 +39,16 @@ public class LOABoard {
     }
 
     public void print(PrintStream s) {
-	if (LOAd.time_controls)
+	if (Gamed.time_controls)
 	    s.print("381 ");
 	else
 	    s.print("380 ");
 	s.print(serial);
 	s.print(" ");
-	if (LOAd.time_controls) {
-	    s.print(LOAd.secs(LOAd.white_msecs));
+	if (Gamed.time_controls) {
+	    s.print(Gamed.secs(Gamed.white_msecs));
 	    s.print(" ");
-	    s.print(LOAd.secs(LOAd.black_msecs));
+	    s.print(Gamed.secs(Gamed.black_msecs));
 	    s.print(" ");
 	}
 	if (game_state == GAME_OVER)
@@ -86,7 +86,7 @@ public class LOABoard {
 	return player;
     }
 
-    boolean same_position(LOABoard b) {
+    boolean same_position(Board b) {
 	if (to_move != b.to_move)
 	    return false;
 	for (int i = 0; i < 8; i++)
@@ -97,7 +97,7 @@ public class LOABoard {
     }
 
     private boolean repeated_position() {
-	LOABoard p = predecessor;
+	Board p = predecessor;
 	while(p != null) {
 	    if (p.same_position(this))
 		return true;
@@ -238,7 +238,7 @@ public class LOABoard {
 	}
 	if (debug_try_move)
 	    System.err.println("move ok");
-	predecessor = new LOABoard(this);
+	predecessor = new Board(this);
 
 	// In this game, the moves are easy
 	square[m.x2][m.y2] = square[m.x1][m.y1];

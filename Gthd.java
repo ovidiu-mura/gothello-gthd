@@ -1,13 +1,14 @@
 import java.io.*;
 import java.net.*;
 
-public class LOAd {
+public class Gamed {
+    public static final String name = "LOA";
     public static final String version = "0.9";
     public static final int server_base = 29057;
     public static final int max_servers = 10;
     public static final int max_observers = 10;
 
-    public static LOABoard board;
+    public static Board board;
 
     static Connection white_conn = null;
     static Connection black_conn = null;
@@ -37,7 +38,7 @@ public class LOAd {
 	// ready the server
 	if (args.length < 1 || args.length > 3 )
 	    throw new IllegalArgumentException(
-	      "usage: LOAd server_number [secs [secs_black]]");
+	      "usage: Gamed server_number [secs [secs_black]]");
 	int snum = Integer.parseInt(args[0]);
 	if (snum < 0 || snum >= 10)
 	    throw new
@@ -89,7 +90,7 @@ public class LOAd {
 	white_conn.start();
 	black_conn.start();
 	// play the game
-	board = new LOABoard();
+	board = new Board();
 	while (true) {
 	    System.out.println();
 	    board.print(System.out);
@@ -126,7 +127,7 @@ public class LOAd {
 				       winner +
 				       " wins on time.");
 		    move_conn.flag_fell();
-		    board.game_state = LOABoard.GAME_OVER;
+		    board.game_state = Board.GAME_OVER;
 		    white_conn.stop_flag(serial, winner);
 		    black_conn.stop_flag(serial, winner);
 		    for (int i = 0; i < nobservers; i++)
@@ -136,10 +137,10 @@ public class LOAd {
 	    }
 	    int status = board.try_move(m);
 	    switch(status) {
-	    case LOABoard.ILLEGAL_MOVE:
+	    case Board.ILLEGAL_MOVE:
 		move_conn.illegal_move(m);
 		continue;
-	    case LOABoard.GAME_OVER:
+	    case Board.GAME_OVER:
 		board.print(System.out);
 		winner = board.referee();
 		System.out.println("Player " +
@@ -151,7 +152,7 @@ public class LOAd {
 		for (int i = 0; i < nobservers; i++)
 		    observer_conn[i].stop(serial, to_move, winner, m);
 		return;
-	    case LOABoard.CONTINUE:
+	    case Board.CONTINUE:
 		if (time_controls) {
 		    int ms = secs(move_time);
 		    move_conn.legal_move_tc(m, ms);

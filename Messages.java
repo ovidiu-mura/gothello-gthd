@@ -79,19 +79,23 @@ public class Messages {
 
     public void resp_greeting() {
 	// not yet
-	if (false && LOAd.time_controls) {
+	if (false && Gamed.time_controls) {
 	    response("001 " +
-		     LOAd.version +
+		     Gamed.version +
 		     " " +
-		     LOAd.secs(LOAd.white_msecs) +
+		     Gamed.secs(Gamed.white_msecs) +
 		     " " +
-		     LOAd.secs(LOAd.black_msecs) +
-		     " version white-secs black-secs Awari server says hello!");
+		     Gamed.secs(Gamed.black_msecs) +
+		     " version white-secs black-secs " +
+		     Gamed.name +
+		     " server says hello!");
 	    return;
 	}
 	response("000 " +
-		 LOAd.version +
-		 " version Awari server says hello!");
+		 Gamed.version +
+		 " version " +
+		 Gamed.name +
+		 " server says hello!");
     }
 
     public int req_side() {
@@ -102,9 +106,9 @@ public class Messages {
 	    return -1;
 	}
 	String version = get_id(req);
-	if (version == null || !version.equals(LOAd.version)) {
+	if (version == null || !version.equals(Gamed.version)) {
 	    response("198 Illegal version number (expected " +
-		     LOAd.version +
+		     Gamed.version +
 		     " got " +
 		     version +
 		     ")");
@@ -159,6 +163,6 @@ public class Messages {
     }
 
     public void print_board() {
-	LOAd.board.print(writer);
+	Gamed.board.print(writer);
     }
 }
