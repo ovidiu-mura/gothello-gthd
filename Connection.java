@@ -41,11 +41,11 @@ public class Connection {
 		socket.close();
 		throw new IOException("second try for white player");
 	    }
-	    if (Gamed.time_controls) {
+	    if (Gthd.time_controls) {
 		msg.response("101 " +
-			 Gamed.secs(Gamed.white_msecs) +
+			 Gthd.secs(Gthd.white_msecs) +
 			 " " +
-			 Gamed.secs(Gamed.black_msecs) +
+			 Gthd.secs(Gthd.black_msecs) +
 			 " Request accepted with time controls (you / opp)");
 		return;
 	    }
@@ -58,11 +58,11 @@ public class Connection {
 		socket.close();
 		throw new IOException("second try for black player");
 	    }
-	    if (Gamed.time_controls) {
+	    if (Gthd.time_controls) {
 		msg.response("101 " +
-			 Gamed.secs(Gamed.black_msecs) +
+			 Gthd.secs(Gthd.black_msecs) +
 			 " " +
-			 Gamed.secs(Gamed.white_msecs) +
+			 Gthd.secs(Gthd.white_msecs) +
 			 " Request accepted with time controls (you / opp)");
 		return;
 	    }
@@ -71,16 +71,16 @@ public class Connection {
 	}
 	if (who == OBSERVER) {
 	    // XXX this limit is illegal
-	    if (nobservers >= Gamed.max_observers) {
+	    if (nobservers >= Gthd.max_observers) {
 		msg.response("193 Cannot observe");
 		socket.close();
 		throw new IOException("too many observers");
 	    }
-	    if (Gamed.time_controls) {
+	    if (Gthd.time_controls) {
 		msg.response("101 " +
-			 Gamed.secs(Gamed.white_msecs) +
+			 Gthd.secs(Gthd.white_msecs) +
 			 " " +
-			 Gamed.secs(Gamed.black_msecs) +
+			 Gthd.secs(Gthd.black_msecs) +
 			 " Request accepted with time controls");
 		return;
 	    }
@@ -161,11 +161,17 @@ public class Connection {
     public void move(int serial, int to_move, Move m) {
 	String result_code, ellipses, result_desc;
 	if (to_move == Connection.PLAYER_BLACK) {
-	    result_code = "311";
+	    if (m.isPass())
+		result_code = "315";
+	    else
+		result_code = "311";
 	    ellipses = "";
 	    result_desc = "black";
 	} else {
-	    result_code = "312";
+	    if (m.isPass())
+		result_code = "316";
+	    else
+		result_code = "312";
 	    ellipses = " ...";
 	    result_desc = "white";
 	}
@@ -184,11 +190,17 @@ public class Connection {
     public void move_tc(int serial, int to_move, Move m, int time) {
 	String result_code, ellipses, result_desc;
 	if (to_move == Connection.PLAYER_BLACK) {
-	    result_code = "313";
+	    if (m.isPass())
+		result_code = "317";
+	    else
+		result_code = "313";
 	    ellipses = "";
 	    result_desc = "black";
 	} else {
-	    result_code = "314";
+	    if (m.isPass())
+		result_code = "318";
+	    else
+		result_code = "314";
 	    ellipses = " ...";
 	    result_desc = "white";
 	}

@@ -14,27 +14,21 @@ public class Board {
     public int serial = 1;
 
     // rules-specific game state 
-    Board predecessor = null;
-    int square[][] = new int[8][8];
+    Move previous_move = null;
+    int square[][] = new int[5][5];
     static final int WHITE_CHECKER = PLAYER_WHITE;
     static final int BLACK_CHECKER = PLAYER_BLACK;
 
     public Board() {
-	for (int i = 0; i < 8; i++)
-	    for (int j = 0; j < 8; j++)
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
 		square[i][j] = 0;
-	for (int i = 1; i < 7; i++) {
-	    square[i][0] = BLACK_CHECKER;
-	    square[i][7] = BLACK_CHECKER;
-	    square[0][i] = WHITE_CHECKER;
-	    square[7][i] = WHITE_CHECKER;
-	}
     }
 
     public Board(Board b) {
-	predecessor = b.predecessor;
-	for (int i = 0; i < 8; i++)
-	    for (int j = 0; j < 8; j++)
+	previous_move = b.previous_move;
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
 		square[i][j] = b.square[i][j];
 
 	to_move = b.to_move;
@@ -43,16 +37,16 @@ public class Board {
     }
 
     public void print(PrintStream s) {
-	if (Gamed.time_controls)
+	if (Gthd.time_controls)
 	    s.print("381 ");
 	else
 	    s.print("380 ");
 	s.print(serial);
 	s.print(" ");
-	if (Gamed.time_controls) {
-	    s.print(Gamed.secs(Gamed.black_msecs));
+	if (Gthd.time_controls) {
+	    s.print(Gthd.secs(Gthd.black_msecs));
 	    s.print(" ");
-	    s.print(Gamed.secs(Gamed.white_msecs));
+	    s.print(Gthd.secs(Gthd.white_msecs));
 	    s.print(" ");
 	}
 	if (game_state == GAME_OVER)
@@ -64,8 +58,8 @@ public class Board {
 	s.print("\r\n");
 	s.flush();
 	s.print("382\r\n");
-	for (int j = 7; j >= 0; --j) {
-	    for (int i = 0; i < 8; i++)
+	for (int j = 4; j >= 0; --j) {
+	    for (int i = 0; i < 5; i++)
 		switch (square[i][j]) {
 		case 0:  s.print("."); break;
 		case BLACK_CHECKER:  s.print("b"); break;
@@ -93,120 +87,78 @@ public class Board {
 	return checker;
     }
 
-    boolean same_position(Board b) {
-	if (to_move != b.to_move)
+    static final boolean[][] scratch_board() {
+	boolean[][] scratch = new boolean[5][5];
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
+		scratch[i][j] = false;
+	return scratch;
+    }
+
+    void flood(boolean[][] scratch, int color, int x, int y) {
+	/* off board */
+	if (!(x >= 0 && x <= 4 && y >= 0 && y <= 4))
+	    return;
+	/* already done */
+	if (scratch[x][y])
+	    return;
+	/* wrong color */
+	if (square[x][y] != color)
+	    return;
+	/* ok */
+	scratch[x][y] = true;
+	flood(scratch, color, x - 1, y);
+	flood(scratch, color, x + 1, y);
+	flood(scratch, color, x, y - 1);
+	flood(scratch, color, x, y + 1);
+    }
+
+    static final boolean group_border(boolean[][] scratch, int x, int y) {
+	if (scratch[x][y])
 	    return false;
-	for (int i = 0; i < 8; i++)
-	    for (int j = 0; j < 8; j++)
-		if (square[i][j] != b.square[i][j])
-		    return false;
-	return true;
-    }
-
-    boolean repeated_position() {
-	Board p = predecessor;
-	while(p != null) {
-	    if (p.same_position(this))
-		return true;
-	    p = p.predecessor;
-	}
-	return false;
-    }
-
-    static final int sgn(int x) {
-	if (x > 0)
-	    return 1;
-	if (x < 0)
-	    return -1;
-	return 0;
-    }
-
-    static final boolean clipped(int x) {
-	if (x >= 8)
+	if (x > 0 && scratch[x - 1][y])
 	    return true;
-	if (x < 0)
+	if (x < 4 && scratch[x + 1][y])
+	    return true;
+	if (y > 0 && scratch[x][y - 1])
+	    return true;
+	if (y < 4 && scratch[x][y + 1])
 	    return true;
 	return false;
     }
-
-    int dist(int x, int y, int dx, int dy) {
-	int d = 0;
-	for(int q = -7; q <= 7; q++) {
-	    int xx = x + q * dx;
-	    int yy = y + q * dy;
-	    if (clipped(xx) || clipped(yy))
-		continue;
-	    if (square[xx][yy] != 0)
-		d++;
-	}
-	return d;
+    
+    int liberties(int x, int y) {
+	boolean[][] scratch = scratch_board();
+	flood(scratch, square[x][y], x, y);
+	int n = 0;
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
+		if (square[i][j] == 0 && group_border(scratch, i, j))
+		    n++;
+	return n;
     }
-
-    boolean blocked(Move m, int dx, int dy, int d) {
-	for (int q = 1; q < d; q++) {
-	    int xx = m.x1 + q * dx;
-	    int yy = m.y1 + q * dy;
-	    if (square[xx][yy] ==
-		checker_of(opponent(owner_of(square[m.x1][m.y1]))))
-		return true;
-	}
-	return false;
-    }
-
-    final static private boolean debug_move_ok = false;
-
+    
     boolean move_ok(Move m) {
-	int dx = sgn(m.x2 - m.x1);
-	int dy = sgn(m.y2 - m.y1);
-	if (debug_move_ok)
-	    System.out.println("entering move_ok(): dir " +
-			       dx + ", " + dy);
-	if (clipped(m.x1) || clipped(m.y1) ||
-	    clipped(m.x2) || clipped(m.y2)) {
-	    if (debug_move_ok)
-		System.out.println("leaving move_ok(): clipped");
+	if (m.isPass())
+	    return true;
+	if (square[m.x][m.y] != 0)
 	    return false;
-	}
-	int d = dist(m.x1, m.y1, dx, dy);
-	if ((m.x2 - m.x1) != d * dx) {
-	    if (debug_move_ok)
-		System.out.println("leaving move_ok(): bad x disp");
+	square[m.x][m.y] = to_move;
+	int n = liberties(m.x, m.y);
+	square[m.x][m.y] = 0;
+	if (n == 0)
 	    return false;
-	}
-	if ((m.y2 - m.y1) != d * dy) {
-	    if (debug_move_ok)
-		System.out.println("leaving move_ok(): bad y disp");
-	    return false;
-	}
-	if (blocked(m, dx, dy, d)) {
-	    if (debug_move_ok)
-		System.out.println("leaving move_ok(): blocked");
-	    return false;
-	}
-	if (square[m.x2][m.y2] == square[m.x1][m.y1]) {
-	    if (debug_move_ok)
-		System.out.println("leaving move_ok(): self-capture");
-	    return false;
-	}
-	if (debug_move_ok)
-	    System.out.println("leaving move_ok(): success");
 	return true;
     }
 
     Vector genMoves() {
 	Vector result = new Vector();
-	for (int i = 0; i < 8; i++)
-	    for (int j = 0; j < 8; j++)
-		if (square[i][j] == checker_of(to_move)) {
-		    for (int dx = -1; dx <= 1; dx++)
-			for (int dy = -1; dy <= 1; dy++) {
-			    if (dx == 0 && dy == 0)
-				continue;
-			    int d = dist(i, j, dx, dy);
-			    Move m = new Move(i, j, i + d * dx, j + d * dy);
-			    if (move_ok(m))
-				result.add(m);
-			}
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
+		if (square[i][j] == 0) {
+		    Move m = new Move(i, j);
+		    if (move_ok(m))
+			result.add(m);
 		}
 	return result;
     }
@@ -216,47 +168,36 @@ public class Board {
 	return m.size() > 0;
     }
 
-    int map_component(int side, int x, int y, boolean map[][]) {
-	int total = 1;
-	map[x][y] = true;
-	for (int dx = -1; dx <= 1; dx++)
-	    for (int dy = -1; dy <= 1; dy++) {
-		if (dx == 0 && dy == 0)
-		    continue;
-		int nx = x + dx;
-		int ny = y + dy;
-		if (clipped(nx) || clipped(ny))
-		    continue;
-		if (square[nx][ny] != checker_of(side))
-		    continue;
-		if (map[nx][ny])
-		    continue;
-		total += map_component(side, nx, ny, map);
-	    }
-        return total;
+    void capture(int x, int y) {
+	if (liberties(x, y) > 0)
+	    return;
+	/* XXX this duplicates a lot of work, but
+	   who cares?  This is just for the referee */
+	boolean[][] scratch = scratch_board();
+	flood(scratch, square[x][y], x, y);
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
+		if (scratch[i][j])
+		    square[i][j] = to_move;
     }
 
-    boolean connected(int side) {
-	for (int i = 0; i < 8; i++)
-	    for (int j = 0; j < 8; j++)
-		if (square[i][j] == checker_of(side)) {
-		    boolean map[][] = new boolean[8][8];
-		    int ncomponents = map_component(side, i, j, map);
-		    for (int ii = 0; ii < 8; ii++)
-			for (int jj = 0; jj < 8; jj++)
-			    if (square[ii][jj] == checker_of(side) &&
-				!map[ii][jj])
-				return false;
-		    return true;
-		}
-	return true;
+    void do_captures(Move m) {
+	if (m.x > 0 && square[m.x - 1][m.y] == opponent(to_move))
+	    capture(m.x - 1, m.y);
+	if (m.x < 4 && square[m.x + 1][m.y] == opponent(to_move))
+	    capture(m.x + 1, m.y);
+	if (m.y > 0 && square[m.x][m.y - 1] == opponent(to_move))
+	    capture(m.x, m.y - 1);
+	if (m.y < 4 && square[m.x][m.y + 1] == opponent(to_move))
+	    capture(m.x, m.y + 1);
     }
-
+    
     public void makeMove(Move m) {
-	// In this game, the moves are easy
-	predecessor = new Board(this);
-	square[m.x2][m.y2] = square[m.x1][m.y1];
-	square[m.x1][m.y1] = 0;
+	previous_move = m;
+	if (m.isPass())
+	    return;
+	square[m.x][m.y] = to_move;
+	do_captures(m);
     }
 
     private static final boolean debug_try_move = false;
@@ -269,11 +210,10 @@ public class Board {
 		System.err.println("leaving try_move(): move after game over");
 	    return ILLEGAL_MOVE;
 	}
-	if (!has_moves()) {
+	if (m.isPass() && previous_move != null && previous_move.isPass()) {
 	    game_state = GAME_OVER;
-	    to_move = opponent(to_move);
 	    if (debug_try_move)
-		System.err.println("leaving try_move(): no legal moves");
+		System.err.println("leaving try_move(): game over");
 	    return GAME_OVER;
 	}
 	if (!move_ok(m)) {
@@ -286,27 +226,6 @@ public class Board {
 
 	makeMove(m);
 
-	if (connected(to_move)) {
-	    game_state = GAME_OVER;
-	    if (debug_try_move)
-		System.err.println("leaving try_move(): move connected");
-	    return GAME_OVER;
-	}
-	if (connected(opponent(to_move))) {
-	    game_state = GAME_OVER;
-	    to_move = opponent(to_move);
-	    if (debug_try_move)
-		System.err.println("leaving try_move(): move connected opponent");
-	    return GAME_OVER;
-	}
-	if (repeated_position()) {
-	    game_state = GAME_OVER;
-	    to_move = OBSERVER;
-	    if (debug_try_move)
-		System.err.println("leaving try_move(): repeat draw");
-	    return GAME_OVER;
-	}
-
 	to_move = opponent(to_move);
 	if (to_move == PLAYER_BLACK)
 	    serial++;
@@ -318,7 +237,18 @@ public class Board {
     public int referee() {
 	if (game_state != GAME_OVER)
 	    throw new Error("internal error: referee unfinished game");
-	return to_move;
+	int nblack = 0;
+	int nwhite = 0;
+	for (int i = 0; i < 5; i++)
+	    for (int j = 0; j < 5; j++)
+		switch (square[i][j]) {
+		case BLACK_CHECKER:  nblack++; break;
+		case WHITE_CHECKER:  nwhite++; break;
+		}
+	if (nblack > nwhite)
+	    return PLAYER_BLACK;
+	if (nwhite > nblack)
+	    return PLAYER_WHITE;
+	return OBSERVER;
     }
-
 }

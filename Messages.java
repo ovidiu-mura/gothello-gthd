@@ -6,11 +6,6 @@ public class Messages {
     private BufferedInputStream reader;
     private PrintStream writer;
     
-    public static final String pit_name[] = {
-	"a", "b", "c", "d", "e", "f",
-	"A", "B", "C", "D", "E", "F"
-    };
-
     public Messages(InputStream instream, OutputStream outstream) {
 	this.instream = instream;
 	this.reader = new BufferedInputStream(instream);
@@ -79,22 +74,22 @@ public class Messages {
 
     public void resp_greeting() {
 	// not yet
-	if (false && Gamed.time_controls) {
+	if (false && Gthd.time_controls) {
 	    response("001 " +
-		     Gamed.version +
+		     Gthd.version +
 		     " " +
-		     Gamed.secs(Gamed.white_msecs) +
+		     Gthd.secs(Gthd.white_msecs) +
 		     " " +
-		     Gamed.secs(Gamed.black_msecs) +
+		     Gthd.secs(Gthd.black_msecs) +
 		     " version white-secs black-secs " +
-		     Gamed.name +
+		     Gthd.name +
 		     " server says hello!");
 	    return;
 	}
 	response("000 " +
-		 Gamed.version +
+		 Gthd.version +
 		 " version " +
-		 Gamed.name +
+		 Gthd.name +
 		 " server says hello!");
     }
 
@@ -106,9 +101,9 @@ public class Messages {
 	    return -1;
 	}
 	String version = get_id(req);
-	if (version == null || !version.equals(Gamed.version)) {
+	if (version == null || !version.equals(Gthd.version)) {
 	    response("198 Illegal version number (expected " +
-		     Gamed.version +
+		     Gthd.version +
 		     " got " +
 		     version +
 		     ")");
@@ -164,6 +159,6 @@ public class Messages {
     }
 
     public void print_board() {
-	Gamed.board.print(writer);
+	Gthd.board.print(writer);
     }
 }

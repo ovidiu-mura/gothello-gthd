@@ -1,10 +1,10 @@
 import java.io.*;
 import java.net.*;
 
-public class Gamed {
-    public static final String name = "LOA";
+public class Gthd {
+    public static final String name = "Gothello";
     public static final String version = "0.9";
-    public static final int server_base = 29057;
+    public static final int server_base = 29068;
     public static final int max_servers = 10;
     public static final int max_observers = 10;
 
@@ -38,9 +38,9 @@ public class Gamed {
 	// ready the server
 	if (args.length < 1 || args.length > 3 )
 	    throw new IllegalArgumentException(
-	      "usage: Gamed server_number [secs [secs_black]]");
+	      "usage: Gthd server_number [secs [secs_black]]");
 	int snum = Integer.parseInt(args[0]);
-	if (snum < 0 || snum >= 10)
+	if (!(snum >= 0 && snum <= max_servers - 1))
 	    throw new
 	     IllegalArgumentException("server number should be in 0.." +
 				      (max_servers - 1));
@@ -147,9 +147,12 @@ public class Gamed {
 	    case Board.GAME_OVER:
 		board.print(System.out);
 		winner = board.referee();
-		System.out.println("Player " +
-				   winner +
-				   " wins.");
+		if (winner == Board.OBSERVER)
+		    System.out.println("Game drawn");
+		else
+		    System.out.println("Player " +
+				       winner +
+				       " wins.");
 		move_conn.final_move(to_move, winner, m);
 		white_conn.stop(serial, to_move, winner, m);
 		black_conn.stop(serial, to_move, winner, m);
