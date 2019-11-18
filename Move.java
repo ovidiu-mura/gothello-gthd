@@ -2,7 +2,7 @@
  * Move for Gthd, GthClient.
  *
  * @author Bart Massey
- * @version $Revision: 2.1 $
+ * @version $Revision: 2.2 $
  */
 public class Move {
     /**
