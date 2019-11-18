@@ -151,8 +151,8 @@ public class Board {
 	return true;
     }
 
-    Vector genMoves() {
-	Vector result = new Vector();
+    Vector<Move> genMoves() {
+	Vector<Move> result = new Vector<Move>();
 	for (int i = 0; i < 5; i++)
 	    for (int j = 0; j < 5; j++)
 		if (square[i][j] == 0) {
