@@ -3,10 +3,10 @@ import java.net.*;
 
 public class Gthd {
     public static final String name = "Gothello";
-    public static final String version = "0.9";
+    public static final String version = "0.9.1";
     public static final int server_base = 29068;
-    public static final int max_servers = 10;
-    public static final int max_observers = 10;
+    public static final int max_servers = 30;
+    public static final int max_observers = 65;
 
     public static Board board;
 
