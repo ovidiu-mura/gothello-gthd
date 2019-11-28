@@ -58,6 +58,12 @@ public class Board {
 	s.print("\r\n");
 	s.flush();
 	s.print("382\r\n");
+        print_board(s);
+	s.flush();
+    }
+
+    public void print_board(PrintStream s) {
+	s.print("382\r\n");
 	for (int j = 4; j >= 0; --j) {
 	    for (int i = 0; i < 5; i++)
 		switch (square[i][j]) {
@@ -68,7 +74,6 @@ public class Board {
 		}
 	    s.print("\r\n");
 	}
-	s.flush();
     }
 
     static final int opponent(int player) {
